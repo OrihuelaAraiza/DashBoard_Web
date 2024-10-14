@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Asesorías</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Reporte de Asesorías</h1>
+    <div id="filtros">
+        <form id="filtroForm" action="php/filtrar.php" method="GET">
+            <label for="fechaInicio">Fecha Inicio:</label>
+            <input type="date" name="fechaInicio" id="fechaInicio" required>
+            
+            <label for="fechaFin">Fecha Fin:</label>
+            <input type="date" name="fechaFin" id="fechaFin" required>
+            
+            <label for="asesor">Asesor:</label>
+            <select name="asesor" id="asesor">
+                <!-- Opciones generadas dinámicamente desde el script -->
+            </select>
+            
+            <label for="sede">Sede:</label>
+            <select name="sede" id="sede">
+                <option value="1">México</option>
+                <option value="4">Aguascalientes</option>
+                <option value="5">Guadalajara</option>
+                <option value="6">Ciudad UP</option>
+                <option value="1007">Sin Sede</option>
+            </select>
+            
+            <label for="categoria">Categoría:</label>
+            <select name="categoria" id="categoria">
+                <!-- Opciones generadas dinámicamente desde el script -->
+            </select>
+            
+            <button type="reset">Limpiar</button>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    <div id="resumen" class="resumen">
+        <!-- Resumen de filtros -->
+    </div>
+
+    <div id="resultados">
+        <!-- Resultados de la consulta -->
+    </div>
+
+    <script src="scripts/app.js"></script>
+</body>
+</html>
