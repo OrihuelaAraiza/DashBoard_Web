@@ -31,6 +31,44 @@ function fetchCategorias() {
             });
         });
 }
+function fetchResultados() {
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+    const asesor = document.getElementById('asesor').value;
+    const sede = document.getElementById('sede').value;
+    const categoria = document.getElementById('categoria').value;
+
+    fetch(`php/filtrar.php?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&asesor=${asesor}&sede=${sede}&categoria=${categoria}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                mostrarResultados(data);
+            } else {
+                alert('No se encontraron resultados para los filtros aplicados.');
+                document.getElementById('resultados').innerHTML = ''; // Limpiar resultados previos
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+function mostrarResultados(data) {
+    const resultadosDiv = document.getElementById('resultados');
+    resultadosDiv.innerHTML = "<table><tr><th>ID</th><th>Correo</th><th>Fecha</th><th>Duración</th><th>Categoría</th><th>Asesor</th></tr>";
+
+    data.forEach(row => {
+        resultadosDiv.innerHTML += `
+            <tr>
+                <td>${row.ID}</td>
+                <td>${row.Correo}</td>
+                <td>${row.Fecha}</td>
+                <td>${row.Duracion}</td>
+                <td>${row.Categoria}</td>
+                <td>${row.Asesor}</td>
+            </tr>
+        `;
+    });
+
+    resultadosDiv.innerHTML += "</table>";
+}
 
 function updateResumen() {
     const fechaInicio = document.getElementById('fechaInicio').value;
