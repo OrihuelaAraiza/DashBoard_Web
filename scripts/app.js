@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     fetchAsesores();
     fetchCategorias();
-    document.getElementById('filtroForm').addEventListener('change', updateResumen);
+    document.getElementById('filtroForm').addEventListener('submit', function (e) {
+        e.preventDefault(); // Evita el envío tradicional del formulario
+        fetchResultados();
+    });
 });
 
 function fetchAsesores() {
@@ -73,7 +76,12 @@ function mostrarResultados(data) {
 function updateResumen() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
-    const asesor = document.getElementById('asesor').options[document.getElementById('asesor').selectedIndex].text;
+    
+    // Recoge todos los asesores seleccionados
+    const asesores = Array.from(document.getElementById('asesor').selectedOptions)
+        .map(option => option.text)
+        .join(', ');
+    
     const sede = document.getElementById('sede').options[document.getElementById('sede').selectedIndex].text;
     const categoria = document.getElementById('categoria').options[document.getElementById('categoria').selectedIndex].text;
 
@@ -82,7 +90,7 @@ function updateResumen() {
         <ul>
             <li>Fecha Inicio: ${fechaInicio}</li>
             <li>Fecha Fin: ${fechaFin}</li>
-            <li>Asesor: ${asesor}</li>
+            <li>Asesor: ${asesores}</li>
             <li>Sede: ${sede}</li>
             <li>Categoría: ${categoria}</li>
         </ul>

@@ -9,7 +9,7 @@
 <body>
     <h1>Reporte de Asesorías</h1>
     <div id="filtros">
-        <form id="filtroForm" action="php/filtrar.php" method="GET">
+        <form id="filtroForm">
             <label for="fechaInicio">Fecha Inicio:</label>
             <input type="date" name="fechaInicio" id="fechaInicio" required>
             
@@ -17,9 +17,7 @@
             <input type="date" name="fechaFin" id="fechaFin" required>
             
             <label for="asesor">Asesor:</label>
-            <select name="asesor" id="asesor">
-                
-            </select>
+            <select name="asesor" id="asesor" multiple></select>
             
             <label for="sede">Sede:</label>
             <select name="sede" id="sede">
@@ -31,27 +29,15 @@
             </select>
             
             <label for="categoria">Categoría:</label>
-            <select name="categoria" id="categoria">
-                <!-- Opciones generadas dinámicamente desde el script -->
-            </select>
+            <select name="categoria" id="categoria"></select>
             
             <button type="reset">Limpiar</button>
             <button type="submit">Buscar</button>
         </form>
     </div>
-
-    <div id="resumen" class="resumen">
-        <!-- Resumen de filtros y cinta de resumen aquí -->
-    </div>
-
-    <div id="resultados">
-        <!-- Resultados de la consulta -->
-    </div>
-
-    <div id="categorias">
-        <!-- Resultados agrupados por categoría -->
-    </div>
-
+    <div id="resumen" class="resumen"></div>
+    <div id="resultados" class="tab-content active"></div>
+    <div id="categorias" class="tab-content"></div>
     <script src="scripts/app.js"></script>
 </body>
 </html>

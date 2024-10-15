@@ -1,68 +1,73 @@
 <?php
 include('conexion.php');
+
 echo "
 <style>
+/* Estilos CSS */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
+    background-color: #1a1a1a;
+    color: #ddd;
     margin: 0;
     padding: 20px;
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    color: #ffd700;
 }
 
-#filtros {
+.tabs {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     margin-bottom: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #fff;
 }
 
-#filtros label, #filtros input, #filtros select, #filtros button {
-    margin: 5px;
-}
-
-.resumen {
-    text-align: center;
-    background-color: #ffd700;
-    padding: 10px;
-    margin-top: 20px;
+.tab-button {
+    background-color: #333;
+    color: #ffd700;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    margin: 0 5px;
     border-radius: 5px;
     font-weight: bold;
 }
 
+.tab-button.active {
+    background-color: #ffd700;
+    color: #333;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
 #resultados, #categorias {
-    margin-top: 20px;
-    background-color: #1a1a1a;
-    color: #ffd700;
+    background-color: #2b2b2b;
     border-radius: 8px;
-    overflow-x: auto;
+    padding: 15px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    color: #ffd700;
 }
 
 th, td {
     padding: 12px;
-    text-align: left;
     border: 1px solid #666;
+    text-align: left;
 }
 
 th {
     background-color: #333;
-    color: #ffd700; /* Cambia a blanco o un color más claro si lo prefieres */
     font-weight: bold;
-    text-transform: uppercase;
 }
 
 tr:nth-child(even) td {
@@ -72,28 +77,26 @@ tr:nth-child(even) td {
 tr:nth-child(odd) td {
     background-color: #222;
 }
-
-tr:hover td {
-    background-color: #444;
-    color: #ffd700;
-}
-
-td {
-    color: #ffd700;
-}
-
-table, th, td {
-    border: 1px solid #666;
-}
 </style>
+
+<h1>Reporte de Asesorías</h1>
+
+<div class='tabs'>
+    <button class='tab-button active' onclick='openTab(\"resultadosTab\", this)'>Resultados</button>
+    <button class='tab-button' onclick='openTab(\"categoriasTab\", this)'>Categorías</button>
+</div>
+
+<div id='resultadosTab' class='tab-content active'>
 ";
 
+// Procesar filtros
 $fechaInicio = $_GET['fechaInicio'];
 $fechaFin = $_GET['fechaFin'];
-$asesor = $_GET['asesor'];
 $sede = $_GET['sede'];
 $categoria = $_GET['categoria'];
+$asesores = explode(",", $_GET['asesor']);
 
+$asesoresList = implode(",", array_map('intval', $asesores));
 
 $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, categoria.Nombre AS Categoria, asesor.Nombre AS Asesor
         FROM asesoria
@@ -101,54 +104,26 @@ $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, 
         JOIN asesor ON asesoria_asesor.id_Asesor = asesor.ID
         JOIN categoria ON asesoria.id_Categoria = categoria.ID
         WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin' 
-        AND asesor.ID = '$asesor' 
+        AND asesor.ID IN ($asesoresList)
         AND asesoria.id_Sede = '$sede' 
         AND asesoria.id_Categoria = '$categoria'";
 
 $result = $conn->query($sql);
 
-
 if ($result->num_rows > 0) {
-    echo "<table>";
-    echo "<tr><th>ID</th><th>Correo</th><th>Fecha</th><th>Duración</th><th>Categoría</th><th>Asesor</th></tr>";
-
-
-    $totalSesiones = 0;
-    $totalHorasAlumnos = 0;
-    $totalHorasTalent = 0;
-    $totalDuracion = 0;
-    $profesoresUnicos = [];
+    echo "<table><tr><th>ID</th><th>Correo</th><th>Fecha</th><th>Duración</th><th>Categoría</th><th>Asesor</th></tr>";
 
     while ($row = $result->fetch_assoc()) {
         echo "<tr><td>{$row['ID']}</td><td>{$row['Correo']}</td><td>{$row['Fecha']}</td><td>{$row['Duracion']}</td><td>{$row['Categoria']}</td><td>{$row['Asesor']}</td></tr>";
-
-
-        $totalSesiones++;
-        $totalDuracion += $row['Duracion'];
-        if (!in_array($row['Correo'], $profesoresUnicos)) {
-            $profesoresUnicos[] = $row['Correo'];
-        }
-
-        $totalHorasTalent += $row['Duracion'] / 60;
     }
-
     echo "</table>";
-
-
-    $duracionMedia = $totalSesiones > 0 ? $totalDuracion / $totalSesiones : 0;
-    $totalHorasAlumnos = $totalDuracion / 60;
-
-    echo "<div class='resumen'>
-            <p>Sesiones: $totalSesiones</p>
-            <p>Total Hrs. Alumnos: $totalHorasAlumnos</p>
-            <p>Duración media de sesión: $duracionMedia</p>
-            <p>Total Hrs. Talent: $totalHorasTalent</p>
-            <p>Profesores (Alumnos): " . count($profesoresUnicos) . "</p>
-         </div>";
 } else {
-
-    echo "<script>alert('No se encontraron resultados para los filtros aplicados.');</script>";
+    echo "<p>No se encontraron resultados para los filtros aplicados.</p>";
 }
+
+echo "</div>";
+
+echo "<div id='categoriasTab' class='tab-content'>";
 
 $sqlCategorias = "SELECT 
                     categoria.Llave AS Key, 
@@ -160,22 +135,17 @@ $sqlCategorias = "SELECT
                 FROM asesoria
                 JOIN categoria ON asesoria.id_Categoria = categoria.ID
                 JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
-                WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin' 
+                WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'
                 AND asesoria.id_Sede = '$sede'
                 GROUP BY categoria.ID";
 
 $resultCategorias = $conn->query($sqlCategorias);
 
 if ($resultCategorias->num_rows > 0) {
-    echo "<div id='categorias'>";
-    echo "<table>";
-    echo "<tr><th>Key</th><th>Nombre</th><th>Sesiones</th><th>Profesores</th><th>Total Horas Prof</th><th>Total Horas Talent</th><th>Duración Media Prof</th><th>Duración Media Talent</th></tr>";
-
+    echo "<table><tr><th>Key</th><th>Nombre</th><th>Sesiones</th><th>Profesores</th><th>Total Horas Prof</th><th>Total Horas Talent</th><th>Duración Media Prof</th><th>Duración Media Talent</th></tr>";
     while ($row = $resultCategorias->fetch_assoc()) {
-
         $duracionMediaProf = $row['Sesiones'] > 0 ? $row['TotalHorasProf'] / $row['Sesiones'] : 0;
         $duracionMediaTalent = $row['Sesiones'] > 0 ? $row['TotalHorasTalent'] / $row['Sesiones'] : 0;
-
         echo "<tr>
                 <td>{$row['Key']}</td>
                 <td>{$row['Nombre']}</td>
@@ -187,11 +157,11 @@ if ($resultCategorias->num_rows > 0) {
                 <td>" . number_format($duracionMediaTalent, 2) . "</td>
               </tr>";
     }
-
     echo "</table>";
-    echo "</div>";
 } else {
-    echo "<script>alert('No se encontraron resultados para la vista de categorías.');</script>";
+    echo "<p>No se encontraron resultados para la vista de categorías.</p>";
 }
+
+echo "</div>";
 
 $conn->close();
