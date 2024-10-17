@@ -45,7 +45,7 @@ function fetchResultados() {
                 mostrarResultados(data);
             } else {
                 alert('No se encontraron resultados para los filtros aplicados.');
-                document.getElementById('resultados').innerHTML = ''; // Limpiar resultados previos
+                document.getElementById('resultados').innerHTML = ''; 
             }
         })
         .catch(error => console.error('Error:', error));

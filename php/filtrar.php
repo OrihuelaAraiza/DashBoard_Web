@@ -80,6 +80,7 @@ echo "
         font-weight: bold;
     }
 
+    
     tr:nth-child(even) td {
         background-color: #2a2a2a;
     }
@@ -88,7 +89,7 @@ echo "
         background-color: #222;
     }
 
-    /* Estilo para el botón de regreso */
+    
     .return-button {
         display: inline-block;
         padding: 10px 20px;
@@ -109,7 +110,6 @@ echo "
     }
     </style>
 
-    <!-- Mueve el script aquí con defer -->
     <script defer>
     function openTab(tabId, element) {
         var tabs = document.getElementsByClassName('tab-content');
@@ -211,7 +211,7 @@ if ($resultCategorias->num_rows > 0) {
 
 echo "</div>";
 
-// Botón para regresar a la página principal
+
 echo "<div style='text-align: center;'><a href='../index.html' class='return-button'>Volver a Inicio</a></div>";
 
 echo "</body>
