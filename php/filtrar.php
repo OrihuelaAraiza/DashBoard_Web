@@ -1,5 +1,8 @@
 <?php
 include('conexion.php');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 echo "
 <!DOCTYPE html>
@@ -105,6 +108,24 @@ echo "
         color: #ffd700;
     }
     </style>
+
+    <!-- Mueve el script aquí con defer -->
+    <script defer>
+    function openTab(tabId, element) {
+        var tabs = document.getElementsByClassName('tab-content');
+        for (var i = 0; i < tabs.length; i++) {
+            tabs[i].classList.remove('active');
+        }
+
+        var buttons = document.getElementsByClassName('tab-button');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+
+        document.getElementById(tabId).classList.add('active');
+        element.classList.add('active');
+    }
+    </script>
 </head>
 <body>
     <h1>Reporte de Asesorías</h1>
@@ -124,6 +145,7 @@ $categoria = $_GET['categoria'];
 $asesores = explode(",", $_GET['asesor']);
 $asesoresList = implode(",", array_map('intval', $asesores));
 
+// Consulta para los resultados de asesorías
 $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, categoria.Nombre AS Categoria, asesor.Nombre AS Asesor
         FROM asesoria
         JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
@@ -151,7 +173,7 @@ echo "</div>";
 echo "<div id='categoriasTab' class='tab-content'>";
 
 $sqlCategorias = "SELECT 
-                    categoria.Llave AS Key, 
+                    categoria.Llave AS `Key`, 
                     categoria.Nombre AS Nombre, 
                     COUNT(DISTINCT asesoria.ID) AS Sesiones,
                     COUNT(DISTINCT asesoria.Correo) AS Profesores, 
@@ -192,23 +214,7 @@ echo "</div>";
 // Botón para regresar a la página principal
 echo "<div style='text-align: center;'><a href='../index.html' class='return-button'>Volver a Inicio</a></div>";
 
-echo "
-<script>
-function openTab(tabId, element) {
-    var tabs = document.getElementsByClassName('tab-content');
-    for (var i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
-
-    var buttons = document.getElementsByClassName('tab-button');
-    for (var i = 0; i < buttons.length; i++) {
-        buttons[i].classList.remove('active');
-    }
-
-    document.getElementById(tabId).classList.add('active');
-    element.classList.add('active');
-}
-</script>
-";
+echo "</body>
+</html>";
 
 $conn->close();
