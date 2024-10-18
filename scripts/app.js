@@ -76,6 +76,7 @@ function mostrarResultados(data) {
     resultadosDiv.innerHTML += "</table>";
 }
 
+// Actualiza el resumen con asesores seleccionados y permite eliminarlos
 function updateResumen() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
@@ -83,6 +84,7 @@ function updateResumen() {
     const sede = document.getElementById('sede').options[document.getElementById('sede').selectedIndex].text;
     const categoria = document.getElementById('categoria').options[document.getElementById('categoria').selectedIndex].text;
 
+    // Obtener los asesores seleccionados actualmente y agregarlos al arreglo global
     Array.from(asesorSelect.selectedOptions).forEach(option => {
         const exists = asesoresSeleccionados.find(asesor => asesor.id == option.value);
         if (!exists) { // Solo agregar si no está ya en el arreglo
@@ -104,6 +106,8 @@ function updateResumen() {
             <li>Categoría: ${categoria}</li>
         </ul>
     `;
+
+    fetchCategoriasFiltradas(); // Llamamos a esta función para que la pestaña de categorías se actualice con los filtros seleccionados
 }
 
 // Función para eliminar asesores desde el resumen
@@ -121,4 +125,43 @@ function removeAsesor(asesorId) {
     }
 
     updateResumen(); // Actualizar el resumen para reflejar los cambios
+}
+
+// Función para obtener los resultados de la pestaña de Categorías filtrados por los parámetros
+function fetchCategoriasFiltradas() {
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+    const asesoresString = asesoresSeleccionados.map(asesor => asesor.id).join(',');
+    const sede = document.getElementById('sede').value;
+    const categoria = document.getElementById('categoria').value;
+
+    fetch(`php/categorias.php?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&asesor=${asesoresString}&sede=${sede}&categoria=${categoria}`)
+        .then(response => response.json())
+        .then(data => {
+            mostrarCategoriasFiltradas(data);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Función para mostrar los resultados de Categorías en el DOM
+function mostrarCategoriasFiltradas(data) {
+    const categoriasDiv = document.getElementById('categorias');
+    categoriasDiv.innerHTML = "<table><tr><th>Key</th><th>Nombre</th><th>Sesiones</th><th>Profesores</th><th>Total Horas Prof</th><th>Total Horas Talent</th><th>Duración Media Prof</th><th>Duración Media Talent</th></tr>";
+
+    data.forEach(row => {
+        categoriasDiv.innerHTML += `
+            <tr>
+                <td>${row.Key}</td>
+                <td>${row.Nombre}</td>
+                <td>${row.Sesiones}</td>
+                <td>${row.Profesores}</td>
+                <td>${row.TotalHorasProf}</td>
+                <td>${row.TotalHorasTalent}</td>
+                <td>${row.DuracionMediaProf}</td>
+                <td>${row.DuracionMediaTalent}</td>
+            </tr>
+        `;
+    });
+
+    categoriasDiv.innerHTML += "</table>";
 }
