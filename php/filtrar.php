@@ -143,7 +143,6 @@ $categoria = $_GET['categoria'];
 $asesores = isset($_GET['asesor']) ? $_GET['asesor'] : [];
 $asesoresList = implode(",", array_map('intval', $asesores));
 
-// Consulta SQL para los resultados de asesorías con los filtros aplicados
 $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, categoria.Nombre AS Categoria, asesor.Nombre AS Asesor
         FROM asesoria
         JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
@@ -153,7 +152,6 @@ $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, 
         AND asesoria.id_Sede = '$sede' 
         AND asesoria.id_Categoria = '$categoria'";
 
-// Agregar filtro de asesores solo si se seleccionaron asesores
 if (!empty($asesoresList)) {
     $sql .= " AND asesor.ID IN ($asesoresList)";
 }
@@ -174,7 +172,6 @@ echo "</div>";
 
 echo "<div id='categoriasTab' class='tab-content'>";
 
-// Consulta SQL para la pestaña de Categorías con filtros aplicados
 $sqlCategorias = "SELECT 
                     categoria.Llave AS `Key`, 
                     categoria.Nombre AS Nombre, 
@@ -185,12 +182,11 @@ $sqlCategorias = "SELECT
                 FROM asesoria
                 JOIN categoria ON asesoria.id_Categoria = categoria.ID
                 JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
-                JOIN asesor ON asesoria_asesor.id_Asesor = asesor.ID  -- Se agrega este JOIN para usar asesor.ID en la consulta
+                JOIN asesor ON asesoria_asesor.id_Asesor = asesor.ID  
                 WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'
                 AND asesoria.id_Sede = '$sede' 
                 AND asesoria.id_Categoria = '$categoria'";
 
-// Si hay asesores seleccionados, añadir el filtro a la consulta
 if (!empty($asesoresList)) {
     $sqlCategorias .= " AND asesor.ID IN ($asesoresList)";
 }

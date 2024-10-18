@@ -1,4 +1,4 @@
-// Arreglo global para almacenar los asesores seleccionados
+
 let asesoresSeleccionados = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -50,7 +50,7 @@ function fetchResultados() {
                 mostrarResultados(data);
             } else {
                 alert('No se encontraron resultados para los filtros aplicados.');
-                document.getElementById('resultados').innerHTML = ''; // Limpiar resultados previos
+                document.getElementById('resultados').innerHTML = ''; 
             }
         })
         .catch(error => console.error('Error:', error));
@@ -76,7 +76,7 @@ function mostrarResultados(data) {
     resultadosDiv.innerHTML += "</table>";
 }
 
-// Actualiza el resumen con asesores seleccionados y permite eliminarlos
+
 function updateResumen() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
@@ -84,10 +84,10 @@ function updateResumen() {
     const sede = document.getElementById('sede').options[document.getElementById('sede').selectedIndex].text;
     const categoria = document.getElementById('categoria').options[document.getElementById('categoria').selectedIndex].text;
 
-    // Obtener los asesores seleccionados actualmente y agregarlos al arreglo global
+
     Array.from(asesorSelect.selectedOptions).forEach(option => {
         const exists = asesoresSeleccionados.find(asesor => asesor.id == option.value);
-        if (!exists) { // Solo agregar si no está ya en el arreglo
+        if (!exists) { 
             asesoresSeleccionados.push({ id: option.value, name: option.text });
         }
     });
@@ -107,27 +107,25 @@ function updateResumen() {
         </ul>
     `;
 
-    fetchCategoriasFiltradas(); // Llamamos a esta función para que la pestaña de categorías se actualice con los filtros seleccionados
+    fetchCategoriasFiltradas(); 
 }
 
-// Función para eliminar asesores desde el resumen
+
 function removeAsesor(asesorId) {
-    // Filtrar para quitar el asesor seleccionado
     asesoresSeleccionados = asesoresSeleccionados.filter(asesor => asesor.id != asesorId);
 
-    // Deseleccionar en el campo de selección
+   
     const asesorSelect = document.getElementById('asesor');
     for (let option of asesorSelect.options) {
         if (option.value == asesorId) {
-            option.selected = false; // Deseleccionar asesor
+            option.selected = false; 
             break;
         }
     }
 
-    updateResumen(); // Actualizar el resumen para reflejar los cambios
+    updateResumen(); 
 }
 
-// Función para obtener los resultados de la pestaña de Categorías filtrados por los parámetros
 function fetchCategoriasFiltradas() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
@@ -143,7 +141,6 @@ function fetchCategoriasFiltradas() {
         .catch(error => console.error('Error:', error));
 }
 
-// Función para mostrar los resultados de Categorías en el DOM
 function mostrarCategoriasFiltradas(data) {
     const categoriasDiv = document.getElementById('categorias');
     categoriasDiv.innerHTML = "<table><tr><th>Key</th><th>Nombre</th><th>Sesiones</th><th>Profesores</th><th>Total Horas Prof</th><th>Total Horas Talent</th><th>Duración Media Prof</th><th>Duración Media Talent</th></tr>";
