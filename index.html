@@ -18,7 +18,7 @@
             <input type="date" name="fechaFin" id="fechaFin" required>
             
             <label for="asesor">Asesor:</label>
-            <select name="asesor" id="asesor">
+            <select name="asesor[]" id="asesor" multiple></select>
                 
             </select>
             
@@ -33,7 +33,7 @@
             
             <label for="categoria">Categoría:</label>
             <select name="categoria" id="categoria">
-                <!-- Opciones generadas dinámicamente desde el script -->
+        
             </select>
             
             <button type="reset">Limpiar</button>
@@ -42,12 +42,9 @@
     </div>
 
     <div id="resumen" class="resumen">
-        <!-- Resumen de filtros y cinta de resumen aquí -->
+        
     </div>
 
-   
-
-   
 
     <script src="scripts/app.js"></script>
 </body>

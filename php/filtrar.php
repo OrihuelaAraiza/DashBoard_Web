@@ -142,8 +142,9 @@ $fechaInicio = $_GET['fechaInicio'];
 $fechaFin = $_GET['fechaFin'];
 $sede = $_GET['sede'];
 $categoria = $_GET['categoria'];
-$asesores = explode(",", $_GET['asesor']);
-$asesoresList = implode(",", array_map('intval', $asesores));
+$asesores = isset($_GET['asesor']) ? $_GET['asesor'] : []; // Si no hay asesores seleccionados, lo manejamos como un array vacío
+$asesoresList = implode(",", array_map('intval', $asesores)); // Convierte el array en una cadena separada por comas
+
 
 // Consulta para los resultados de asesorías
 $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, categoria.Nombre AS Categoria, asesor.Nombre AS Asesor
