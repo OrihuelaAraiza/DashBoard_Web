@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateResumen();
             fetchResultados();
             fetchCategoriasResultados();
+            fetchAsesoresResultados();
         });
     });
 
@@ -17,14 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
         updateResumen();
         fetchResultados();
         fetchCategoriasResultados();
+        fetchAsesoresResultados();
     });
 
-    // Manejar el botón de reset para limpiar los filtros
     filtroForm.addEventListener('reset', function() {
-        setTimeout(() => { // Esperar a que los valores se restablezcan
+        setTimeout(() => {
             updateResumen();
             fetchResultados();
             fetchCategoriasResultados();
+            fetchAsesoresResultados();
         }, 0);
     });
 });
@@ -116,6 +118,7 @@ function removeFilter(event) {
     updateResumen();
     fetchResultados();
     fetchCategoriasResultados();
+    fetchAsesoresResultados();
 }
 
 function fetchResultados() {
@@ -139,6 +142,18 @@ function fetchCategoriasResultados() {
     .then(response => response.text())
     .then(data => {
         document.getElementById('categoriasTab').innerHTML = data;
+    });
+}
+
+function fetchAsesoresResultados() {
+    const formData = new FormData(document.getElementById('filtroForm'));
+    fetch('php/filtrar_asesores.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('asesoresTab').innerHTML = data;
     });
 }
 
