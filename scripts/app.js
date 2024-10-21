@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchCategoriasResultados();
                 fetchAsesoresResultados();
             } else {
-                // Limpiar resultados si las fechas no están establecidas
                 document.getElementById('cintaResumen').innerHTML = '';
                 document.getElementById('resumen').innerHTML = '<p>Por favor, selecciona una fecha de inicio y una fecha de fin.</p>';
                 document.getElementById('resultadosTab').innerHTML = '';
@@ -46,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 0);
     });
 
-    // Verificar si las fechas están establecidas al cargar la página
     if (areDatesSet()) {
         fetchResumen();
     }
@@ -56,6 +54,31 @@ function areDatesSet() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
     return fechaInicio && fechaFin;
+}
+
+function buildFormData() {
+    const form = document.getElementById('filtroForm');
+    const formData = new FormData();
+
+    formData.append('fechaInicio', form.fechaInicio.value);
+    formData.append('fechaFin', form.fechaFin.value);
+
+    const asesoresSelect = form['asesor'];
+    for (let option of asesoresSelect.selectedOptions) {
+        formData.append('asesor[]', option.value);
+    }
+
+    const sedesSelect = form['sede'];
+    for (let option of sedesSelect.selectedOptions) {
+        formData.append('sede[]', option.value);
+    }
+
+    const categoriasSelect = form['categoria'];
+    for (let option of categoriasSelect.selectedOptions) {
+        formData.append('categoria[]', option.value);
+    }
+
+    return formData;
 }
 
 function fetchAsesores() {
@@ -128,7 +151,6 @@ function updateResumen() {
 
     document.getElementById('resumen').innerHTML = resumenHTML;
 
-    // Agregar event listeners a los botones de eliminar filtro
     const removeButtons = document.querySelectorAll('.remove-filter');
     removeButtons.forEach(button => {
         button.addEventListener('click', removeFilter);
@@ -155,7 +177,7 @@ function removeFilter(event) {
 }
 
 function fetchResumen() {
-    const formData = new FormData(document.getElementById('filtroForm'));
+    const formData = buildFormData();
     fetch('php/obtener_resumen.php', {
         method: 'POST',
         body: formData
@@ -188,7 +210,7 @@ function displayResumen(data) {
 }
 
 function fetchResultados() {
-    const formData = new FormData(document.getElementById('filtroForm'));
+    const formData = buildFormData();
     fetch('php/filtrar.php', {
         method: 'POST',
         body: formData
@@ -200,7 +222,7 @@ function fetchResultados() {
 }
 
 function fetchCategoriasResultados() {
-    const formData = new FormData(document.getElementById('filtroForm'));
+    const formData = buildFormData();
     fetch('php/filtrar_categorias.php', {
         method: 'POST',
         body: formData
@@ -212,7 +234,7 @@ function fetchCategoriasResultados() {
 }
 
 function fetchAsesoresResultados() {
-    const formData = new FormData(document.getElementById('filtroForm'));
+    const formData = buildFormData();
     fetch('php/filtrar_asesores.php', {
         method: 'POST',
         body: formData

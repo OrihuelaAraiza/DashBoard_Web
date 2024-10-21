@@ -1,19 +1,26 @@
 <?php
 include('conexion.php');
 
-// Habilitar reporte de errores (solo para desarrollo)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Obtener datos del formulario
 $fechaInicio = $_POST['fechaInicio'];
 $fechaFin = $_POST['fechaFin'];
 $asesores = isset($_POST['asesor']) ? $_POST['asesor'] : [];
 $sedes = isset($_POST['sede']) ? $_POST['sede'] : [];
 $categorias = isset($_POST['categoria']) ? $_POST['categoria'] : [];
 
-// Validar que las fechas no estén vacías
+if (!is_array($asesores)) {
+    $asesores = [$asesores];
+}
+if (!is_array($sedes)) {
+    $sedes = [$sedes];
+}
+if (!is_array($categorias)) {
+    $categorias = [$categorias];
+}
+
 if (empty($fechaInicio) || empty($fechaFin)) {
     echo json_encode([
         'sesiones' => 0,
@@ -25,22 +32,18 @@ if (empty($fechaInicio) || empty($fechaFin)) {
     exit;
 }
 
-// Sanitizar las entradas
 $fechaInicio = $conn->real_escape_string($fechaInicio);
 $fechaFin = $conn->real_escape_string($fechaFin);
 
-// Convertimos los arrays a cadenas para la cláusula IN de SQL
 $asesoresList = !empty($asesores) ? implode(",", array_map('intval', $asesores)) : '';
 $sedesList = !empty($sedes) ? implode(",", array_map('intval', $sedes)) : '';
 $categoriasList = !empty($categorias) ? implode(",", array_map('intval', $categorias)) : '';
 
-// Construir la consulta base
 $sql = "SELECT asesoria.ID, asesoria.Duracion, asesoria.Correo, COUNT(asesoria_asesor.id_Asesor) AS TotalAsesores
         FROM asesoria
         JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
         WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'";
 
-// Aplicar filtros si existen
 if (!empty($asesoresList)) {
     $sql .= " AND asesoria_asesor.id_Asesor IN ($asesoresList)";
 }
@@ -53,7 +56,6 @@ if (!empty($categoriasList)) {
 
 $sql .= " GROUP BY asesoria.ID";
 
-// Ejecutar la consulta
 $result = $conn->query($sql);
 
 $sesiones = 0;
@@ -71,16 +73,12 @@ if ($result && $result->num_rows > 0) {
     }
 }
 
-// Calcular duración media de sesión en minutos
 $duracionMediaSesion = $sesiones > 0 ? ($totalDuracion / $sesiones) : 0;
 
-// Calcular total de horas de alumnos
 $totalHorasAlumnos = $totalDuracion / 60;
 
-// Contar alumnos únicos
 $alumnosUnicos = count(array_unique($alumnos));
 
-// Preparar datos para JSON
 $resumenData = [
     'sesiones' => $sesiones,
     'totalHorasAlumnos' => $totalHorasAlumnos,
@@ -89,7 +87,6 @@ $resumenData = [
     'profesores' => $alumnosUnicos
 ];
 
-// Enviar respuesta en formato JSON
 header('Content-Type: application/json');
 echo json_encode($resumenData);
 

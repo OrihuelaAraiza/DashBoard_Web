@@ -64,7 +64,7 @@ h1 {
     display: block;
 }
 
-#resultadosTab, #categoriasTab {
+#resultadosTab, #categoriasTab, #asesoresTab {
     background-color: #2b2b2b;
     padding: 15px;
     border-radius: 8px;
@@ -125,19 +125,9 @@ button[type="reset"]:hover, button[type="submit"]:hover {
     padding: 15px;
     border-radius: 8px;
     margin-top: 20px;
-}
-.remove-filter {
-    background-color: transparent;
-    color: #ff4c4c;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    margin-left: 5px;
+    color: #ddd;
 }
 
-.remove-filter:hover {
-    color: #ff1a1a;
-}
 .cinta-resumen {
     background-color: #ffd700; /* Color dorado */
     padding: 10px;
@@ -154,4 +144,17 @@ button[type="reset"]:hover, button[type="submit"]:hover {
 .cinta-resumen div {
     text-align: center;
     margin: 5px;
+}
+
+.remove-filter {
+    background-color: transparent;
+    color: #ff4c4c;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.remove-filter:hover {
+    color: #ff1a1a;
 }

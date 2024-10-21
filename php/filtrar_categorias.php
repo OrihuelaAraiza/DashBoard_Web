@@ -1,18 +1,34 @@
 <?php
 include('conexion.php');
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 $fechaInicio = $_POST['fechaInicio'];
 $fechaFin = $_POST['fechaFin'];
 $asesores = isset($_POST['asesor']) ? $_POST['asesor'] : [];
 $sedes = isset($_POST['sede']) ? $_POST['sede'] : [];
 $categorias = isset($_POST['categoria']) ? $_POST['categoria'] : [];
 
+if (!is_array($asesores)) {
+    $asesores = [$asesores];
+}
+if (!is_array($sedes)) {
+    $sedes = [$sedes];
+}
+if (!is_array($categorias)) {
+    $categorias = [$categorias];
+}
+
+$fechaInicio = $conn->real_escape_string($fechaInicio);
+$fechaFin = $conn->real_escape_string($fechaFin);
+
 // Convertimos los arrays a cadenas para la cláusula IN de SQL
 $asesoresList = !empty($asesores) ? implode(",", array_map('intval', $asesores)) : '';
 $sedesList = !empty($sedes) ? implode(",", array_map('intval', $sedes)) : '';
 $categoriasList = !empty($categorias) ? implode(",", array_map('intval', $categorias)) : '';
 
-// Consulta SQL para categorías
 $sqlCategorias = "SELECT 
                     categoria.Llave AS `Key`, 
                     categoria.Nombre AS Nombre, 
