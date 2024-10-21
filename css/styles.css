@@ -138,3 +138,20 @@ button[type="reset"]:hover, button[type="submit"]:hover {
 .remove-filter:hover {
     color: #ff1a1a;
 }
+.cinta-resumen {
+    background-color: #ffd700; /* Color dorado */
+    padding: 10px;
+    margin: 10px 0;
+    color: #1a1a1a; /* Texto oscuro para contraste */
+    font-weight: bold;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 8px;
+}
+
+.cinta-resumen div {
+    text-align: center;
+    margin: 5px;
+}

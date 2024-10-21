@@ -6,30 +6,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = filtroForm.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('change', () => {
-            updateResumen();
-            fetchResultados();
-            fetchCategoriasResultados();
-            fetchAsesoresResultados();
+            if (areDatesSet()) {
+                updateResumen();
+                fetchResumen();
+                fetchResultados();
+                fetchCategoriasResultados();
+                fetchAsesoresResultados();
+            } else {
+                // Limpiar resultados si las fechas no están establecidas
+                document.getElementById('cintaResumen').innerHTML = '';
+                document.getElementById('resumen').innerHTML = '<p>Por favor, selecciona una fecha de inicio y una fecha de fin.</p>';
+                document.getElementById('resultadosTab').innerHTML = '';
+                document.getElementById('categoriasTab').innerHTML = '';
+                document.getElementById('asesoresTab').innerHTML = '';
+            }
         });
     });
 
     filtroForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        updateResumen();
-        fetchResultados();
-        fetchCategoriasResultados();
-        fetchAsesoresResultados();
+        if (areDatesSet()) {
+            updateResumen();
+            fetchResumen();
+            fetchResultados();
+            fetchCategoriasResultados();
+            fetchAsesoresResultados();
+        } else {
+            alert('Por favor, selecciona una fecha de inicio y una fecha de fin.');
+        }
     });
 
     filtroForm.addEventListener('reset', function() {
         setTimeout(() => {
             updateResumen();
-            fetchResultados();
-            fetchCategoriasResultados();
-            fetchAsesoresResultados();
+            fetchResumen();
+            document.getElementById('resultadosTab').innerHTML = '';
+            document.getElementById('categoriasTab').innerHTML = '';
+            document.getElementById('asesoresTab').innerHTML = '';
         }, 0);
     });
+
+    // Verificar si las fechas están establecidas al cargar la página
+    if (areDatesSet()) {
+        fetchResumen();
+    }
 });
+
+function areDatesSet() {
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+    return fechaInicio && fechaFin;
+}
 
 function fetchAsesores() {
     fetch('php/obtener_asesores.php')
@@ -65,6 +92,11 @@ function updateResumen() {
     const asesoresSelect = document.getElementById('asesor');
     const sedesSelect = document.getElementById('sede');
     const categoriasSelect = document.getElementById('categoria');
+
+    if (!fechaInicio || !fechaFin) {
+        document.getElementById('resumen').innerHTML = '<p>Por favor, selecciona una fecha de inicio y una fecha de fin.</p>';
+        return;
+    }
 
     const asesores = Array.from(asesoresSelect.selectedOptions).map(option => ({ id: option.value, text: option.text }));
     const sedes = Array.from(sedesSelect.selectedOptions).map(option => ({ id: option.value, text: option.text }));
@@ -116,9 +148,43 @@ function removeFilter(event) {
     }
 
     updateResumen();
+    fetchResumen();
     fetchResultados();
     fetchCategoriasResultados();
     fetchAsesoresResultados();
+}
+
+function fetchResumen() {
+    const formData = new FormData(document.getElementById('filtroForm'));
+    fetch('php/obtener_resumen.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        displayResumen(data);
+    });
+}
+
+function displayResumen(data) {
+    const cintaResumen = document.getElementById('cintaResumen');
+    cintaResumen.innerHTML = `
+        <div>
+            <strong>Sesiones:</strong> ${data.sesiones}
+        </div>
+        <div>
+            <strong>Total Hrs. Alumnos:</strong> ${data.totalHorasAlumnos.toFixed(2)}
+        </div>
+        <div>
+            <strong>Duración media de sesión:</strong> ${data.duracionMediaSesion.toFixed(2)} mins
+        </div>
+        <div>
+            <strong>Total Hrs. Talent:</strong> ${data.totalHorasTalent.toFixed(2)}
+        </div>
+        <div>
+            <strong>Alumnos:</strong> ${data.profesores}
+        </div>
+    `;
 }
 
 function fetchResultados() {
