@@ -138,22 +138,32 @@ echo "
 
 $fechaInicio = $_GET['fechaInicio'];
 $fechaFin = $_GET['fechaFin'];
-$sede = $_GET['sede'];
-$categoria = $_GET['categoria'];
 $asesores = isset($_GET['asesor']) ? $_GET['asesor'] : [];
-$asesoresList = implode(",", array_map('intval', $asesores));
+$sedes = isset($_GET['sede']) ? $_GET['sede'] : [];
+$categorias = isset($_GET['categoria']) ? $_GET['categoria'] : [];
 
+// Convertir los arrays a cadenas separadas por comas
+$asesoresList = !empty($asesores) ? implode(",", array_map('intval', $asesores)) : '';
+$sedesList = !empty($sedes) ? implode(",", array_map('intval', $sedes)) : '';
+$categoriasList = !empty($categorias) ? implode(",", array_map('intval', $categorias)) : '';
+
+// Consulta SQL para los resultados de asesorías con los filtros aplicados
 $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, categoria.Nombre AS Categoria, asesor.Nombre AS Asesor
         FROM asesoria
         JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
         JOIN asesor ON asesoria_asesor.id_Asesor = asesor.ID
         JOIN categoria ON asesoria.id_Categoria = categoria.ID
-        WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin' 
-        AND asesoria.id_Sede = '$sede' 
-        AND asesoria.id_Categoria = '$categoria'";
+        WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'";
 
+// Filtros
 if (!empty($asesoresList)) {
     $sql .= " AND asesor.ID IN ($asesoresList)";
+}
+if (!empty($sedesList)) {
+    $sql .= " AND asesoria.id_Sede IN ($sedesList)";
+}
+if (!empty($categoriasList)) {
+    $sql .= " AND asesoria.id_Categoria IN ($categoriasList)";
 }
 
 $result = $conn->query($sql);
@@ -168,10 +178,27 @@ if ($result->num_rows > 0) {
     echo "<p>No se encontraron resultados para los filtros aplicados.</p>";
 }
 
-echo "</div>";
+$conn->close();
+?>
 
-echo "<div id='categoriasTab' class='tab-content'>";
+<!-- Código para la pestaña Categorías -->
+<?php
+include('conexion.php');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+$fechaInicio = $_GET['fechaInicio'];
+$fechaFin = $_GET['fechaFin'];
+$asesores = isset($_GET['asesor']) ? $_GET['asesor'] : [];
+$sedes = isset($_GET['sede']) ? $_GET['sede'] : [];
+$categorias = isset($_GET['categoria']) ? $_GET['categoria'] : [];
+
+$asesoresList = !empty($asesores) ? implode(",", array_map('intval', $asesores)) : '';
+$sedesList = !empty($sedes) ? implode(",", array_map('intval', $sedes)) : '';
+$categoriasList = !empty($categorias) ? implode(",", array_map('intval', $categorias)) : '';
+
+// Consulta para la pestaña Categorías
 $sqlCategorias = "SELECT 
                     categoria.Llave AS `Key`, 
                     categoria.Nombre AS Nombre, 
@@ -182,13 +209,18 @@ $sqlCategorias = "SELECT
                 FROM asesoria
                 JOIN categoria ON asesoria.id_Categoria = categoria.ID
                 JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
-                JOIN asesor ON asesoria_asesor.id_Asesor = asesor.ID  
-                WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'
-                AND asesoria.id_Sede = '$sede' 
-                AND asesoria.id_Categoria = '$categoria'";
+                JOIN asesor ON asesoria_asesor.id_Asesor = asesor.ID
+                WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'";
 
+// Filtros
 if (!empty($asesoresList)) {
     $sqlCategorias .= " AND asesor.ID IN ($asesoresList)";
+}
+if (!empty($sedesList)) {
+    $sqlCategorias .= " AND asesoria.id_Sede IN ($sedesList)";
+}
+if (!empty($categoriasList)) {
+    $sqlCategorias .= " AND asesoria.id_Categoria IN ($categoriasList)";
 }
 
 $sqlCategorias .= " GROUP BY categoria.ID";
@@ -216,11 +248,5 @@ if ($resultCategorias->num_rows > 0) {
     echo "<p>No se encontraron resultados para la vista de categorías.</p>";
 }
 
-echo "</div>";
-
-echo "<div style='text-align: center;'><a href='../index.html' class='return-button'>Volver a Inicio</a></div>";
-
-echo "</body>
-</html>";
-
 $conn->close();
+?>
