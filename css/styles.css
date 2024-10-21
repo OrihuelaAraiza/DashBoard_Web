@@ -39,6 +39,7 @@ h1 {
 .tabs {
     display: flex;
     justify-content: center;
+    margin-top: 20px;
 }
 
 .tab-button {
@@ -47,6 +48,7 @@ h1 {
     padding: 10px 20px;
     margin: 0 5px;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .tab-button.active {
@@ -54,10 +56,19 @@ h1 {
     color: #333;
 }
 
-#resultados, #categorias {
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+#resultadosTab, #categoriasTab {
     background-color: #2b2b2b;
     padding: 15px;
     border-radius: 8px;
+    margin-top: 20px;
 }
 
 table {
@@ -107,4 +118,23 @@ button[type="reset"], button[type="submit"] {
 button[type="reset"]:hover, button[type="submit"]:hover {
     background-color: #555;
     color: #ffd700;
+}
+
+#resumen {
+    background-color: #2b2b2b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+.remove-filter {
+    background-color: transparent;
+    color: #ff4c4c;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.remove-filter:hover {
+    color: #ff1a1a;
 }

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -10,7 +9,7 @@
 <body>
     <h1>Reporte de Asesorías</h1>
     <div id="filtros">
-        <form id="filtroForm" action="php/filtrar.php" method="GET">
+        <form id="filtroForm">
             <label for="fechaInicio">Fecha Inicio:</label>
             <input type="date" name="fechaInicio" id="fechaInicio" required>
             
@@ -19,8 +18,6 @@
             
             <label for="asesor">Asesor:</label>
             <select name="asesor[]" id="asesor" multiple></select>
-                
-            </select>
             
             <label for="sede">Sede:</label>
             <select name="sede[]" id="sede" multiple>
@@ -32,19 +29,22 @@
             </select>
             
             <label for="categoria">Categoría:</label>
-            <select name="categoria[]" id="categoria" multiple>
-        
-            </select>
+            <select name="categoria[]" id="categoria" multiple></select>
             
             <button type="reset">Limpiar</button>
             <button type="submit">Buscar</button>
         </form>
     </div>
 
-    <div id="resumen" class="resumen">
-        
+    <div id="resumen" class="resumen"></div>
+    
+    <div class="tabs">
+        <button class="tab-button active" onclick="openTab('resultadosTab', this)">Resultados</button>
+        <button class="tab-button" onclick="openTab('categoriasTab', this)">Categorías</button>
     </div>
 
+    <div id="resultadosTab" class="tab-content active"></div>
+    <div id="categoriasTab" class="tab-content"></div>
 
     <script src="scripts/app.js"></script>
 </body>

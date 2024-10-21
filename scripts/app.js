@@ -1,13 +1,32 @@
-// Global arrays for selected values
-let asesoresSeleccionados = [];
-let sedesSeleccionadas = [];
-let categoriasSeleccionadas = [];
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchAsesores();
-    fetchSedes();
     fetchCategorias();
-    document.getElementById('filtroForm').addEventListener('change', updateResumen);
+
+    const filtroForm = document.getElementById('filtroForm');
+    const inputs = filtroForm.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('change', () => {
+            updateResumen();
+            fetchResultados();
+            fetchCategoriasResultados();
+        });
+    });
+
+    filtroForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        updateResumen();
+        fetchResultados();
+        fetchCategoriasResultados();
+    });
+
+    // Manejar el botón de reset para limpiar los filtros
+    filtroForm.addEventListener('reset', function() {
+        setTimeout(() => { // Esperar a que los valores se restablezcan
+            updateResumen();
+            fetchResultados();
+            fetchCategoriasResultados();
+        }, 0);
+    });
 });
 
 function fetchAsesores() {
@@ -20,20 +39,6 @@ function fetchAsesores() {
                 option.value = asesor.ID;
                 option.textContent = asesor.Nombre;
                 asesorSelect.appendChild(option);
-            });
-        });
-}
-
-function fetchSedes() {
-    fetch('php/obtener_sedes.php')
-        .then(response => response.json())
-        .then(data => {
-            const sedeSelect = document.getElementById('sede');
-            data.forEach(sede => {
-                const option = document.createElement('option');
-                option.value = sede.ID;
-                option.textContent = sede.Nombre;
-                sedeSelect.appendChild(option);
             });
         });
 }
@@ -55,142 +60,99 @@ function fetchCategorias() {
 function updateResumen() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
-    const asesorSelect = document.getElementById('asesor');
-    const sedeSelect = document.getElementById('sede');
-    const categoriaSelect = document.getElementById('categoria');
+    const asesoresSelect = document.getElementById('asesor');
+    const sedesSelect = document.getElementById('sede');
+    const categoriasSelect = document.getElementById('categoria');
 
-    // Manejar asesores seleccionados
-    Array.from(asesorSelect.selectedOptions).forEach(option => {
-        const exists = asesoresSeleccionados.find(asesor => asesor.id == option.value);
-        if (!exists) { 
-            asesoresSeleccionados.push({ id: option.value, name: option.text });
-        }
+    const asesores = Array.from(asesoresSelect.selectedOptions).map(option => ({ id: option.value, text: option.text }));
+    const sedes = Array.from(sedesSelect.selectedOptions).map(option => ({ id: option.value, text: option.text }));
+    const categorias = Array.from(categoriasSelect.selectedOptions).map(option => ({ id: option.value, text: option.text }));
+
+    let resumenHTML = '<strong>Filtros seleccionados:</strong><ul>';
+    resumenHTML += `<li>Fecha Inicio: ${fechaInicio || 'N/A'}</li>`;
+    resumenHTML += `<li>Fecha Fin: ${fechaFin || 'N/A'}</li>`;
+
+    resumenHTML += '<li>Asesores: <ul>';
+    asesores.forEach(asesor => {
+        resumenHTML += `<li>${asesor.text} <button class="remove-filter" data-type="asesor" data-id="${asesor.id}">X</button></li>`;
     });
+    resumenHTML += '</ul></li>';
 
-    // Manejar sedes seleccionadas
-    Array.from(sedeSelect.selectedOptions).forEach(option => {
-        const exists = sedesSeleccionadas.find(sede => sede.id == option.value);
-        if (!exists) {
-            sedesSeleccionadas.push({ id: option.value, name: option.text });
-        }
+    resumenHTML += '<li>Sedes: <ul>';
+    sedes.forEach(sede => {
+        resumenHTML += `<li>${sede.text} <button class="remove-filter" data-type="sede" data-id="${sede.id}">X</button></li>`;
     });
+    resumenHTML += '</ul></li>';
 
-    // Manejar categorías seleccionadas
-    Array.from(categoriaSelect.selectedOptions).forEach(option => {
-        const exists = categoriasSeleccionadas.find(categoria => categoria.id == option.value);
-        if (!exists) {
-            categoriasSeleccionadas.push({ id: option.value, name: option.text });
-        }
+    resumenHTML += '<li>Categorías: <ul>';
+    categorias.forEach(categoria => {
+        resumenHTML += `<li>${categoria.text} <button class="remove-filter" data-type="categoria" data-id="${categoria.id}">X</button></li>`;
     });
+    resumenHTML += '</ul></li>';
 
-    const asesoresList = asesoresSeleccionados.map(asesor => 
-        `<li>${asesor.name} <button onclick="removeAsesor(${asesor.id})">Eliminar</button></li>`
-    ).join('');
-    
-    const sedesList = sedesSeleccionadas.map(sede => 
-        `<li>${sede.name} <button onclick="removeSede(${sede.id})">Eliminar</button></li>`
-    ).join('');
+    resumenHTML += '</ul>';
 
-    const categoriasList = categoriasSeleccionadas.map(categoria => 
-        `<li>${categoria.name} <button onclick="removeCategoria(${categoria.id})">Eliminar</button></li>`
-    ).join('');
+    document.getElementById('resumen').innerHTML = resumenHTML;
 
-    document.getElementById('resumen').innerHTML = `
-        <strong>Filtros seleccionados:</strong>
-        <ul>
-            <li>Fecha Inicio: ${fechaInicio}</li>
-            <li>Fecha Fin: ${fechaFin}</li>
-            <li>Asesores: <ul>${asesoresList}</ul></li>
-            <li>Sedes: <ul>${sedesList}</ul></li>
-            <li>Categorías: <ul>${categoriasList}</ul></li>
-        </ul>
-    `;
-
-    fetchResultados(); // Actualiza los resultados
+    // Agregar event listeners a los botones de eliminar filtro
+    const removeButtons = document.querySelectorAll('.remove-filter');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', removeFilter);
+    });
 }
 
-// Función para eliminar asesores del resumen
-function removeAsesor(asesorId) {
-    asesoresSeleccionados = asesoresSeleccionados.filter(asesor => asesor.id != asesorId);
+function removeFilter(event) {
+    const type = event.target.getAttribute('data-type');
+    const id = event.target.getAttribute('data-id');
 
-    const asesorSelect = document.getElementById('asesor');
-    for (let option of asesorSelect.options) {
-        if (option.value == asesorId) {
+    const selectElement = document.getElementById(type);
+    for (let option of selectElement.options) {
+        if (option.value === id) {
             option.selected = false;
             break;
         }
     }
 
-    updateResumen(); 
-}
-
-// Función para eliminar sedes del resumen
-function removeSede(sedeId) {
-    sedesSeleccionadas = sedesSeleccionadas.filter(sede => sede.id != sedeId);
-
-    const sedeSelect = document.getElementById('sede');
-    for (let option of sedeSelect.options) {
-        if (option.value == sedeId) {
-            option.selected = false;
-            break;
-        }
-    }
-
-    updateResumen(); 
-}
-
-// Función para eliminar categorías del resumen
-function removeCategoria(categoriaId) {
-    categoriasSeleccionadas = categoriasSeleccionadas.filter(categoria => categoria.id != categoriaId);
-
-    const categoriaSelect = document.getElementById('categoria');
-    for (let option of categoriaSelect.options) {
-        if (option.value == categoriaId) {
-            option.selected = false;
-            break;
-        }
-    }
-
-    updateResumen(); 
+    updateResumen();
+    fetchResultados();
+    fetchCategoriasResultados();
 }
 
 function fetchResultados() {
-    const fechaInicio = document.getElementById('fechaInicio').value;
-    const fechaFin = document.getElementById('fechaFin').value;
-
-    const asesoresString = asesoresSeleccionados.map(asesor => asesor.id).join(',');
-    const sedesString = sedesSeleccionadas.map(sede => sede.id).join(',');
-    const categoriasString = categoriasSeleccionadas.map(categoria => categoria.id).join(',');
-
-    fetch(`php/filtrar.php?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&asesor=${asesoresString}&sede=${sedesString}&categoria=${categoriasString}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.length > 0) {
-                mostrarResultados(data);
-            } else {
-                alert('No se encontraron resultados para los filtros aplicados.');
-                document.getElementById('resultados').innerHTML = ''; 
-            }
-        })
-        .catch(error => console.error('Error:', error));
+    const formData = new FormData(document.getElementById('filtroForm'));
+    fetch('php/filtrar.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('resultadosTab').innerHTML = data;
+    });
 }
 
-function mostrarResultados(data) {
-    const resultadosDiv = document.getElementById('resultados');
-    resultadosDiv.innerHTML = "<table><tr><th>ID</th><th>Correo</th><th>Fecha</th><th>Duración</th><th>Categoría</th><th>Asesor</th></tr>";
-
-    data.forEach(row => {
-        resultadosDiv.innerHTML += `
-            <tr>
-                <td>${row.ID}</td>
-                <td>${row.Correo}</td>
-                <td>${row.Fecha}</td>
-                <td>${row.Duracion}</td>
-                <td>${row.Categoria}</td>
-                <td>${row.Asesor}</td>
-            </tr>
-        `;
+function fetchCategoriasResultados() {
+    const formData = new FormData(document.getElementById('filtroForm'));
+    fetch('php/filtrar_categorias.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('categoriasTab').innerHTML = data;
     });
+}
 
-    resultadosDiv.innerHTML += "</table>";
+function openTab(tabId, element) {
+    var tabs = document.getElementsByClassName('tab-content');
+    for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
+
+    var buttons = document.getElementsByClassName('tab-button');
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('active');
+    }
+
+    document.getElementById(tabId).classList.add('active');
+    element.classList.add('active');
 }
