@@ -112,9 +112,9 @@ select[multiple] {
 }
 
 button[type="reset"], button[type="submit"] {
-    background-color: #2c394f; /* Fondo de botones */
-    color: #fff; /* Texto blanco */
-    border: 1px solid #1a2131; /* Bordes */
+    background-color: #2c394f; 
+    color: #fff; 
+    border: 1px solid #1a2131; 
     border-radius: 4px;
     padding: 8px 16px;
     margin: 5px;
@@ -123,23 +123,23 @@ button[type="reset"], button[type="submit"] {
 }
 
 button[type="reset"]:hover, button[type="submit"]:hover {
-    background-color: #6291fd; /* Fondo de hover */
-    color: #fff; /* Texto blanco */
+    background-color: #6291fd; 
+    color: #fff; 
 }
 
 #resumen {
-    background-color: rgba(21, 30, 47, 1); /* Fondo del resumen */
+    background-color: rgba(21, 30, 47, 1); 
     padding: 15px;
     border-radius: 8px;
     margin-top: 20px;
-    color: #fff; /* Texto blanco */
+    color: #fff; 
 }
 
 .cinta-resumen {
-    background-color: #2869ff; /* Color dorado adaptado */
+    background-color: #2869ff; 
     padding: 10px;
     margin: 10px 0;
-    color: #fff; /* Texto blanco */
+    color: #fff; 
     font-weight: bold;
     display: flex;
     flex-wrap: wrap;
@@ -155,7 +155,7 @@ button[type="reset"]:hover, button[type="submit"]:hover {
 
 .remove-filter {
     background-color: transparent;
-    color: #ff4c4c; /* Color de eliminación */
+    color: #ff4c4c; 
     border: none;
     cursor: pointer;
     font-size: 14px;
@@ -163,31 +163,31 @@ button[type="reset"]:hover, button[type="submit"]:hover {
 }
 
 .remove-filter:hover {
-    color: #ff1a1a; /* Color de hover de eliminación */
+    color: #ff1a1a; 
 }
 
 button[type="reset"], button[type="submit"] {
-    background-color: #2c394f; /* Fondo de botones */
-    color: #fff; /* Texto blanco */
-    border: none; /* Sin borde */
-    border-radius: 4px; /* Bordes redondeados */
-    padding: 10px 20px; /* Espaciado interno */
+    background-color: #2c394f; 
+    color: #fff; 
+    border: none; 
+    border-radius: 4px; 
+    padding: 10px 20px; 
     margin: 5px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s, transform 0.2s; /* Transiciones suaves */
-    font-size: 14px; /* Tamaño de fuente */
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px; /* Sombra */
+    transition: background-color 0.3s, color 0.3s, transform 0.2s; 
+    font-size: 14px; 
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 8px; 
 }
 
 button[type="reset"]:hover, button[type="submit"]:hover {
-    background-color: #2869ff; /* Fondo de hover */
-    color: #fff; /* Texto blanco */
-    transform: translateY(-2px); /* Efecto de elevación */
+    background-color: #2869ff; 
+    color: #fff; 
+    transform: translateY(-2px); 
 }
 
 button[type="reset"]:active, button[type="submit"]:active {
-    background-color: #1d283c; /* Fondo al hacer clic */
-    transform: translateY(0); /* Regresa a la posición original */
+    background-color: #1d283c;
+    transform: translateY(0); 
 }
 
 .tabs {
@@ -197,30 +197,30 @@ button[type="reset"]:active, button[type="submit"]:active {
 }
 
 .tab-button {
-    background-color: #333; /* Color de fondo por defecto */
-    color: #ffffff; /* Color de texto */
-    padding: 10px 20px; /* Espaciado interno */
+    background-color: #333; 
+    color: #ffffff; 
+    padding: 10px 20px;
     margin: 0 5px;
-    border: none; /* Sin borde */
-    border-radius: 5px; /* Bordes redondeados */
+    border: none; 
+    border-radius: 5px; 
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s, transform 0.2s; /* Transiciones suaves */
-    font-size: 16px; /* Tamaño de fuente */
+    transition: background-color 0.3s, color 0.3s, transform 0.2s; 
+    font-size: 16px; 
 }
 
 .tab-button.active {
-    background-color: #2869ff; /* Color de fondo activo */
-    color: #ffffff; /* Color de texto activo */
-    transform: translateY(-2px); /* Efecto de elevación */
+    background-color: #2869ff; 
+    color: #ffffff; 
+    transform: translateY(-2px); 
 }
 
 .tab-button:hover {
-    background-color: #444; /* Fondo en hover */
-    color: #2869ff; /* Texto en hover */
-    transform: translateY(-2px); /* Efecto de elevación */
+    background-color: #444; 
+    color: #2869ff; 
+    transform: translateY(-2px); 
 }
 
 .tab-button:focus {
-    outline: none; /* Sin contorno al enfocar */
-    box-shadow: 0 0 0 2px 2869ff(51 0% 0% / 0.5); /* Sombra de enfoque */
+    outline: none; 
+    box-shadow: 0 0 0 2px 2869ff(51 0% 0% / 0.5); 
 }

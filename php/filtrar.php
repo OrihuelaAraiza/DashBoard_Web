@@ -1,33 +1,33 @@
 <?php
 include('conexion.php');
 
+// Habilitar reporte de errores
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$fechaInicio = $_POST['fechaInicio'];
-$fechaFin = $_POST['fechaFin'];
-$asesores = isset($_POST['asesor']) ? $_POST['asesor'] : [];
-$sedes = isset($_POST['sede']) ? $_POST['sede'] : [];
-$categorias = isset($_POST['categoria']) ? $_POST['categoria'] : [];
+// Obtener datos del formulario
+$fechaInicio = $_POST['fechaInicio'] ?? '';
+$fechaFin = $_POST['fechaFin'] ?? '';
+$asesores = $_POST['asesor'] ?? [];
+$sedes = $_POST['sede'] ?? [];
+$categorias = $_POST['categoria'] ?? [];
 
-if (!is_array($asesores)) {
-    $asesores = [$asesores];
-}
-if (!is_array($sedes)) {
-    $sedes = [$sedes];
-}
-if (!is_array($categorias)) {
-    $categorias = [$categorias];
-}
+// Asegurarse de que son arrays
+$asesores = is_array($asesores) ? $asesores : [$asesores];
+$sedes = is_array($sedes) ? $sedes : [$sedes];
+$categorias = is_array($categorias) ? $categorias : [$categorias];
 
+// Sanitizar las entradas
 $fechaInicio = $conn->real_escape_string($fechaInicio);
 $fechaFin = $conn->real_escape_string($fechaFin);
 
+// Convertir los arrays a cadenas separadas por comas para la consulta SQL
 $asesoresList = !empty($asesores) ? implode(",", array_map('intval', $asesores)) : '';
 $sedesList = !empty($sedes) ? implode(",", array_map('intval', $sedes)) : '';
 $categoriasList = !empty($categorias) ? implode(",", array_map('intval', $categorias)) : '';
 
+// Construir la consulta SQL
 $sql = "SELECT asesoria.ID, asesoria.Correo, asesoria.Fecha, asesoria.Duracion, categoria.Nombre AS Categoria, asesor.Nombre AS Asesor
         FROM asesoria
         JOIN asesoria_asesor ON asesoria.ID = asesoria_asesor.id_Asesoria
@@ -45,9 +45,11 @@ if (!empty($categoriasList)) {
     $sql .= " AND asesoria.id_Categoria IN ($categoriasList)";
 }
 
+// Ejecutar la consulta
 $result = $conn->query($sql);
 
-if ($result->num_rows > 0) {
+// Procesar y mostrar los resultados
+if ($result && $result->num_rows > 0) {
     echo "<table><tr><th>ID</th><th>Correo</th><th>Fecha</th><th>Duración</th><th>Categoría</th><th>Asesor</th></tr>";
     while ($row = $result->fetch_assoc()) {
         echo "<tr><td>{$row['ID']}</td><td>{$row['Correo']}</td><td>{$row['Fecha']}</td><td>{$row['Duracion']}</td><td>{$row['Categoria']}</td><td>{$row['Asesor']}</td></tr>";

@@ -1,26 +1,24 @@
 <?php
 include('conexion.php');
 
+// Habilitar reporte de errores
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$fechaInicio = $_POST['fechaInicio'];
-$fechaFin = $_POST['fechaFin'];
-$asesores = isset($_POST['asesor']) ? $_POST['asesor'] : [];
-$sedes = isset($_POST['sede']) ? $_POST['sede'] : [];
-$categorias = isset($_POST['categoria']) ? $_POST['categoria'] : [];
+// Obtener datos del formulario
+$fechaInicio = $_POST['fechaInicio'] ?? '';
+$fechaFin = $_POST['fechaFin'] ?? '';
+$asesores = $_POST['asesor'] ?? [];
+$sedes = $_POST['sede'] ?? [];
+$categorias = $_POST['categoria'] ?? [];
 
-if (!is_array($asesores)) {
-    $asesores = [$asesores];
-}
-if (!is_array($sedes)) {
-    $sedes = [$sedes];
-}
-if (!is_array($categorias)) {
-    $categorias = [$categorias];
-}
+// Asegurarse de que son arrays
+$asesores = is_array($asesores) ? $asesores : [$asesores];
+$sedes = is_array($sedes) ? $sedes : [$sedes];
+$categorias = is_array($categorias) ? $categorias : [$categorias];
 
+// Sanitizar las entradas
 $fechaInicio = $conn->real_escape_string($fechaInicio);
 $fechaFin = $conn->real_escape_string($fechaFin);
 
@@ -56,7 +54,7 @@ $sqlCategorias .= " GROUP BY categoria.ID";
 
 $resultCategorias = $conn->query($sqlCategorias);
 
-if ($resultCategorias->num_rows > 0) {
+if ($resultCategorias && $resultCategorias->num_rows > 0) {
     echo "<table><tr><th>Key</th><th>Nombre</th><th>Sesiones</th><th>Profesores</th><th>Total Horas Prof</th><th>Total Horas Talent</th><th>Duración Media Prof</th><th>Duración Media Talent</th></tr>";
     while ($row = $resultCategorias->fetch_assoc()) {
         $duracionMediaProf = $row['Sesiones'] > 0 ? $row['TotalHorasProf'] / $row['Sesiones'] : 0;

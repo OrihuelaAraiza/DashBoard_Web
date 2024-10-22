@@ -13,11 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchCategoriasResultados();
                 fetchAsesoresResultados();
             } else {
-                document.getElementById('cintaResumen').innerHTML = '';
-                document.getElementById('resumen').innerHTML = '<p>Por favor, selecciona una fecha de inicio y una fecha de fin.</p>';
-                document.getElementById('resultadosTab').innerHTML = '';
-                document.getElementById('categoriasTab').innerHTML = '';
-                document.getElementById('asesoresTab').innerHTML = '';
+                clearTabs();
             }
         });
     });
@@ -39,9 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             updateResumen();
             fetchResumen();
-            document.getElementById('resultadosTab').innerHTML = '';
-            document.getElementById('categoriasTab').innerHTML = '';
-            document.getElementById('asesoresTab').innerHTML = '';
+            clearTabs();
         }, 0);
     });
 
@@ -151,6 +145,7 @@ function updateResumen() {
 
     document.getElementById('resumen').innerHTML = resumenHTML;
 
+    // Agregar event listeners a los botones de eliminar filtro
     const removeButtons = document.querySelectorAll('.remove-filter');
     removeButtons.forEach(button => {
         button.addEventListener('click', removeFilter);
@@ -258,4 +253,11 @@ function openTab(tabId, element) {
 
     document.getElementById(tabId).classList.add('active');
     element.classList.add('active');
+}
+
+function clearTabs() {
+    document.getElementById('resultadosTab').innerHTML = '';
+    document.getElementById('categoriasTab').innerHTML = '';
+    document.getElementById('asesoresTab').innerHTML = '';
+    document.getElementById('resumen').innerHTML = '';
 }
