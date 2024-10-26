@@ -21,10 +21,6 @@ if (!is_array($categorias)) {
     $categorias = [$categorias];
 }
 
-if (empty($fechaInicio) || empty($fechaFin)) {
-    echo "<p>Por favor, selecciona una fecha de inicio y una fecha de fin.</p>";
-    exit;
-}
 
 $fechaInicio = $conn->real_escape_string($fechaInicio);
 $fechaFin = $conn->real_escape_string($fechaFin);
