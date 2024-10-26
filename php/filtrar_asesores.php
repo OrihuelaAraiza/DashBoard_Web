@@ -21,10 +21,7 @@ if (!is_array($categorias)) {
     $categorias = [$categorias];
 }
 
-if (empty($fechaInicio) || empty($fechaFin)) {
-    echo "<p>Por favor, selecciona una fecha de inicio y una fecha de fin.</p>";
-    exit;
-}
+
 
 $fechaInicio = $conn->real_escape_string($fechaInicio);
 $fechaFin = $conn->real_escape_string($fechaFin);
@@ -34,26 +31,25 @@ $sedesList = !empty($sedes) ? implode(",", array_map('intval', $sedes)) : '';
 $categoriasList = !empty($categorias) ? implode(",", array_map('intval', $categorias)) : '';
 
 $sqlAsesores = "SELECT 
-                    asesor.ID, 
-                    asesor.Nombre, 
-                    asesor.Correo, 
-                    COUNT(DISTINCT asesoria.ID) AS TotalAsesorias,
-                    SUM(asesoria.Duracion) / 60 AS TotalHorasAsesorias,
-                    SUM(asesoria.Duracion * (SELECT COUNT(*) FROM asesoria_asesor WHERE asesoria_asesor.id_Asesoria = asesoria.ID)) / 60 AS TotalHorasTalent,
-                    AVG(asesoria.Duracion) AS DuracionMediaSesion
-                FROM asesor
-                JOIN asesoria_asesor ON asesor.ID = asesoria_asesor.id_Asesor
-                JOIN asesoria ON asesoria_asesor.id_Asesoria = asesoria.ID
-                WHERE asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'";
+    asesor.ID, 
+    asesor.Nombre, 
+    asesor.Correo, 
+    COUNT(DISTINCT asesoria.ID) AS TotalAsesorias,
+    SUM(asesoria.Duracion) / 60 AS TotalHorasAsesorias,
+    SUM(asesoria.Duracion * (SELECT COUNT(*) FROM asesoria_asesor WHERE asesoria_asesor.id_Asesoria = asesoria.ID)) / 60 AS TotalHorasTalent,
+    AVG(asesoria.Duracion) AS DuracionMediaSesion
+FROM asesor
+JOIN asesoria_asesor ON asesor.ID = asesoria_asesor.id_Asesor
+JOIN asesoria ON asesoria_asesor.id_Asesoria = asesoria.ID
+WHERE 1=1";
 
-if (!empty($asesoresList)) {
-    $sqlAsesores .= " AND asesor.ID IN ($asesoresList)";
-}
-if (!empty($sedesList)) {
-    $sqlAsesores .= " AND asesoria.id_Sede IN ($sedesList)";
-}
-if (!empty($categoriasList)) {
-    $sqlAsesores .= " AND asesoria.id_Categoria IN ($categoriasList)";
+
+if (!empty($fechaInicio) && !empty($fechaFin)) {
+    $sqlAsesores .= " AND asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'";
+} elseif (!empty($fechaInicio)) {
+    $sqlAsesores .= " AND asesoria.Fecha >= '$fechaInicio'";
+} elseif (!empty($fechaFin)) {
+    $sqlAsesores .= " AND asesoria.Fecha <= '$fechaFin'";
 }
 
 $sqlAsesores .= " GROUP BY asesor.ID";

@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = filtroForm.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('change', () => {
+            console.log("aiuda 1");
             if (areDatesSet()) {
                 updateResumen();
                 fetchResumen();
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     filtroForm.addEventListener('submit', function(e) {
+        console.log("aiuda 2");
         e.preventDefault();
         if (areDatesSet()) {
             updateResumen();
@@ -26,9 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchResultados();
             fetchCategoriasResultados();
             fetchAsesoresResultados();
-        } else {
-            alert('Por favor, selecciona una fecha de inicio y una fecha de fin.');
-        }
+        } 
     });
 
     filtroForm.addEventListener('reset', function() {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function areDatesSet() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
-    return fechaInicio && fechaFin;
+    return true;
 }
 
 function buildFormData() {
@@ -110,10 +110,7 @@ function updateResumen() {
     const sedesSelect = document.getElementById('sede');
     const categoriasSelect = document.getElementById('categoria');
 
-    if (!fechaInicio || !fechaFin) {
-        document.getElementById('resumen').innerHTML = '<p>Por favor, selecciona una fecha de inicio y una fecha de fin.</p>';
-        return;
-    }
+  console.log("aiuda");
 
     const asesores = Array.from(asesoresSelect.selectedOptions).map(option => ({ id: option.value, text: option.text }));
     const sedes = Array.from(sedesSelect.selectedOptions).map(option => ({ id: option.value, text: option.text }));
