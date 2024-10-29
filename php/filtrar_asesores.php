@@ -5,31 +5,28 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-$fechaInicio = $_POST['fechaInicio'];
-$fechaFin = $_POST['fechaFin'];
+// Obtener datos del formulario
+$fechaInicio = $_POST['fechaInicio'] ?? '';
+$fechaFin = $_POST['fechaFin'] ?? '';
 $asesores = isset($_POST['asesor']) ? $_POST['asesor'] : [];
 $sedes = isset($_POST['sede']) ? $_POST['sede'] : [];
 $categorias = isset($_POST['categoria']) ? $_POST['categoria'] : [];
 
-if (!is_array($asesores)) {
-    $asesores = [$asesores];
-}
-if (!is_array($sedes)) {
-    $sedes = [$sedes];
-}
-if (!is_array($categorias)) {
-    $categorias = [$categorias];
-}
+// Asegurarse de que son arrays
+$asesores = is_array($asesores) ? $asesores : [$asesores];
+$sedes = is_array($sedes) ? $sedes : [$sedes];
+$categorias = is_array($categorias) ? $categorias : [$categorias];
 
-
-
+// Sanitizar las entradas
 $fechaInicio = $conn->real_escape_string($fechaInicio);
 $fechaFin = $conn->real_escape_string($fechaFin);
 
+// Convertimos los arrays a cadenas para la cláusula IN de SQL
 $asesoresList = !empty($asesores) ? implode(",", array_map('intval', $asesores)) : '';
 $sedesList = !empty($sedes) ? implode(",", array_map('intval', $sedes)) : '';
 $categoriasList = !empty($categorias) ? implode(",", array_map('intval', $categorias)) : '';
 
+// Construir la consulta base
 $sqlAsesores = "SELECT 
     asesor.ID, 
     asesor.Nombre, 
@@ -41,9 +38,9 @@ $sqlAsesores = "SELECT
 FROM asesor
 JOIN asesoria_asesor ON asesor.ID = asesoria_asesor.id_Asesor
 JOIN asesoria ON asesoria_asesor.id_Asesoria = asesoria.ID
-WHERE 1=1";
+WHERE 1=1"; // Iniciar con una condición siempre verdadera
 
-
+// Agregar condiciones de fecha solo si las fechas no están vacías
 if (!empty($fechaInicio) && !empty($fechaFin)) {
     $sqlAsesores .= " AND asesoria.Fecha BETWEEN '$fechaInicio' AND '$fechaFin'";
 } elseif (!empty($fechaInicio)) {
@@ -52,8 +49,20 @@ if (!empty($fechaInicio) && !empty($fechaFin)) {
     $sqlAsesores .= " AND asesoria.Fecha <= '$fechaFin'";
 }
 
+// Agregar filtros adicionales
+if (!empty($asesoresList)) {
+    $sqlAsesores .= " AND asesor.ID IN ($asesoresList)";
+}
+if (!empty($sedesList)) {
+    $sqlAsesores .= " AND asesoria.id_Sede IN ($sedesList)";
+}
+if (!empty($categoriasList)) {
+    $sqlAsesores .= " AND asesoria.id_Categoria IN ($categoriasList)";
+}
+
 $sqlAsesores .= " GROUP BY asesor.ID";
 
+// Ejecutar la consulta
 $resultAsesores = $conn->query($sqlAsesores);
 
 if ($resultAsesores) {

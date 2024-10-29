@@ -48,6 +48,7 @@ function areDatesSet() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
     return true;
+    return fechaInicio && fechaFin;
 }
 
 function buildFormData() {
