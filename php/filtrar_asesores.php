@@ -12,10 +12,23 @@ $asesores = isset($_POST['asesor']) ? $_POST['asesor'] : [];
 $sedes = isset($_POST['sede']) ? $_POST['sede'] : [];
 $categorias = isset($_POST['categoria']) ? $_POST['categoria'] : [];
 
+<<<<<<< HEAD
 // Asegurarse de que son arrays
 $asesores = is_array($asesores) ? $asesores : [$asesores];
 $sedes = is_array($sedes) ? $sedes : [$sedes];
 $categorias = is_array($categorias) ? $categorias : [$categorias];
+=======
+if (!is_array($asesores)) {
+    $asesores = [$asesores];
+}
+if (!is_array($sedes)) {
+    $sedes = [$sedes];
+}
+if (!is_array($categorias)) {
+    $categorias = [$categorias];
+}
+
+>>>>>>> 586d5a805b763bdf9663c9a7e3405c7ed26cdbeb
 
 // Sanitizar las entradas
 $fechaInicio = $conn->real_escape_string($fechaInicio);
